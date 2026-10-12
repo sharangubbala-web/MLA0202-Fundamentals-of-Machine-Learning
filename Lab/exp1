@@ -1,0 +1,84 @@
+import matplotlib.pyplot as plt
+
+data = [
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Rainy', 'Cold', 'High', 'Strong', 'Warm', 'Change', 'No'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Cool', 'Change', 'Yes']
+]
+
+attributes = [
+    'Sky',
+    'Temperature',
+    'Humidity',
+    'Wind',
+    'Water',
+    'Forecast'
+]
+
+hypothesis = ['0'] * len(attributes)
+
+print("FIND-S ALGORITHM")
+print("=" * 60)
+
+print("\nTraining Data:")
+print("-" * 60)
+
+for row in data:
+    print(row)
+
+print("\nFinding Most Specific Hypothesis")
+print("-" * 60)
+
+step = 1
+
+for row in data:
+
+    if row[-1] == 'Yes':
+
+        for i in range(len(attributes)):
+
+            if hypothesis[i] == '0':
+                hypothesis[i] = row[i]
+
+            elif hypothesis[i] != row[i]:
+                hypothesis[i] = '?'
+
+        print("Step", step)
+        print("Positive Example :", row)
+        print("Hypothesis       :", hypothesis)
+        print()
+
+        step += 1
+
+print("=" * 60)
+print("FINAL MOST SPECIFIC HYPOTHESIS")
+print("=" * 60)
+
+for attribute, value in zip(attributes, hypothesis):
+    print(attribute, ":", value)
+
+print("\nFinal Hypothesis:")
+print("<", end="")
+
+for i, value in enumerate(hypothesis):
+    print(value, end="")
+
+    if i < len(hypothesis) - 1:
+        print(", ", end="")
+
+print(">")
+
+specificity = [1 if value != '?' else 0 for value in hypothesis]
+
+plt.figure(figsize=(9, 5))
+plt.bar(attributes, specificity)
+
+plt.title("FIND-S Algorithm - Final Hypothesis")
+plt.xlabel("Attributes")
+plt.ylabel("Specificity")
+plt.ylim(0, 1.2)
+plt.xticks(rotation=30)
+
+plt.tight_layout()
+plt.show()

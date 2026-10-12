@@ -1,0 +1,101 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = pd.DataFrame([
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Rainy', 'Cold', 'High', 'Strong', 'Warm', 'Change', 'No'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Cool', 'Change', 'Yes']
+], columns=[
+    'Sky', 'Temperature', 'Humidity',
+    'Wind', 'Water', 'Forecast', 'EnjoySport'
+])
+
+attributes = list(data.columns[:-1])
+
+S = ['Ø'] * len(attributes)
+G = [['?'] * len(attributes)]
+
+S_history = []
+
+for _, row in data.iterrows():
+
+    if row['EnjoySport'] == 'Yes':
+
+        for i in range(len(attributes)):
+
+            if S[i] == 'Ø':
+                S[i] = row[attributes[i]]
+
+            elif S[i] != row[attributes[i]]:
+                S[i] = '?'
+
+    else:
+
+        new_G = []
+
+        for g in G:
+
+            for i in range(len(attributes)):
+
+                if g[i] == '?' and S[i] != row[attributes[i]]:
+
+                    new_g = g.copy()
+                    new_g[i] = S[i]
+
+                    if new_g not in new_G:
+                        new_G.append(new_g)
+
+        G = new_G
+
+    S_history.append(S.copy())
+
+
+print("TRAINING DATA")
+print(data)
+
+print("\nFINAL SPECIFIC BOUNDARY:")
+print(S)
+
+print("\nFINAL GENERAL BOUNDARY:")
+for g in G:
+    print(g)
+
+values = []
+
+for hypothesis in S_history:
+
+    count = 0
+
+    for value in hypothesis:
+
+        if value == 'Ø':
+            count += 0
+        elif value == '?':
+            count += 2
+        else:
+            count += 1
+
+    values.append(count)
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(
+    range(1, len(values) + 1),
+    values,
+    marker='o',
+    linewidth=2
+)
+
+plt.xticks(
+    range(1, len(values) + 1),
+    [f"Example {i}" for i in range(1, len(values) + 1)]
+)
+
+plt.xlabel("Training Examples")
+plt.ylabel("Hypothesis Generality")
+plt.title("Candidate-Elimination Algorithm - Specific Boundary")
+
+plt.grid(True)
+
+plt.show()
