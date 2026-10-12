@@ -1,0 +1,32 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.mixture import GaussianMixture
+
+iris = load_iris()
+X = iris.data
+
+model = GaussianMixture(
+    n_components=3,
+    random_state=42,
+    n_init=5
+)
+
+model.fit(X)
+clusters = model.predict(X)
+
+print("First 10 Cluster Labels:")
+print(clusters[:10])
+
+print("Number of Clusters:", len(set(clusters)))
+print("Converged:", model.converged_)
+print("Log Likelihood:", model.score(X))
+
+plt.scatter(
+    X[:, 0], X[:, 1],
+    c=clusters, cmap="viridis", s=50
+)
+plt.xlabel("Sepal Length (cm)")
+plt.ylabel("Sepal Width (cm)")
+plt.title("EM Algorithm - Gaussian Mixture Model")
+plt.colorbar(label="Cluster")
+plt.show()

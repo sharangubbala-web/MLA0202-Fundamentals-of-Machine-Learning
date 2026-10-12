@@ -1,0 +1,57 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)
+y = np.array([[0], [1], [1], [0]], dtype=float)
+
+np.random.seed(42)
+W1 = np.random.randn(2, 4)
+b1 = np.zeros((1, 4))
+W2 = np.random.randn(4, 1)
+b2 = np.zeros((1, 1))
+
+lr = 0.5
+losses = []
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+for epoch in range(10000):
+    h = sigmoid(X @ W1 + b1)
+    output = sigmoid(h @ W2 + b2)
+
+    error = output - y
+    losses.append(np.mean(error ** 2))
+
+    d_output = error * output * (1 - output)
+    d_hidden = (d_output @ W2.T) * h * (1 - h)
+
+    W2 -= lr * (h.T @ d_output)
+    b2 -= lr * np.sum(d_output, axis=0, keepdims=True)
+    W1 -= lr * (X.T @ d_hidden)
+    b1 -= lr * np.sum(d_hidden, axis=0, keepdims=True)
+
+print("Actual Output:")
+print(y.flatten())
+
+print("Predicted Output:")
+print(np.round(output.flatten(), 3))
+
+print("Predicted Classes:")
+print((output >= 0.5).astype(int).flatten())
+
+plt.plot(losses)
+plt.xlabel("Epoch")
+plt.ylabel("Mean Squared Error")
+plt.title("ANN Backpropagation Training Loss")
+plt.grid()
+plt.show()
+
+plt.plot(y.flatten(), "o-", label="Actual")
+plt.plot(output.flatten(), "s--", label="Predicted")
+plt.xlabel("Sample")
+plt.ylabel("Output")
+plt.title("ANN Prediction")
+plt.legend()
+plt.grid()
+plt.show()
