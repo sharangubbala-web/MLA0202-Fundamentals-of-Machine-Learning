@@ -1,0 +1,44 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+
+data = pd.DataFrame({
+    'Income': [20000,30000,50000,60000,80000,90000,
+               25000,35000,55000,65000,75000,95000,
+               22000,40000,70000,85000],
+    'Credit': [0,0,1,1,1,1,0,0,1,1,1,1,0,1,1,1],
+    'Loan': [0,0,1,1,1,1,0,0,1,1,1,1,0,1,1,1]
+})
+
+X = data[['Income','Credit']]
+y = data['Loan']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y
+)
+
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, pred))
+
+result = model.predict([[55000,1]])
+
+if result[0] == 1:
+    print("Loan Approved")
+else:
+    print("Loan Rejected")
+
+cm = confusion_matrix(y_test, pred)
+
+ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=['Rejected','Approved']
+).plot(cmap='Greens')
+
+plt.title("Bank Loan Prediction")
+plt.show()

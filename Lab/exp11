@@ -1,0 +1,48 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+
+data = pd.DataFrame({
+    'Income': [20000,30000,40000,50000,60000,70000,80000,90000,
+               25000,35000,45000,55000,65000,75000,85000,95000,
+               22000,42000,62000,82000],
+    'Debt': [18000,20000,15000,12000,10000,12000,8000,5000,
+             22000,18000,14000,11000,9000,7000,6000,4000,
+             20000,16000,10000,5000],
+    'Payment': [0,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1],
+    'Score': ['Poor','Poor','Standard','Standard','Good','Good',
+              'Good','Good','Poor','Poor','Standard','Standard',
+              'Good','Good','Good','Good','Poor','Standard',
+              'Good','Good']
+})
+
+le = LabelEncoder()
+y = le.fit_transform(data['Score'])
+X = data[['Income','Debt','Payment']]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, pred))
+print("Predicted Credit Score:",
+      le.inverse_transform(model.predict([[55000,10000,1]]))[0])
+
+cm = confusion_matrix(y_test, pred)
+
+ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=le.classes_
+).plot(cmap='Blues')
+
+plt.title("Credit Score Classification")
+plt.show()

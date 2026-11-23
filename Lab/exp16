@@ -1,0 +1,49 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+models = {
+    'KNN': KNeighborsClassifier(),
+    'Decision Tree': DecisionTreeClassifier(random_state=42),
+    'Naive Bayes': GaussianNB(),
+    'SVM': SVC(),
+    'Random Forest': RandomForestClassifier(random_state=42)
+}
+
+names = []
+scores = []
+
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    pred = model.predict(X_test)
+
+    accuracy = accuracy_score(y_test, pred)
+
+    names.append(name)
+    scores.append(accuracy * 100)
+
+    print(name, "Accuracy:", round(accuracy * 100, 2), "%")
+
+plt.figure(figsize=(9,5))
+plt.bar(names, scores)
+
+plt.xlabel("Classification Algorithms")
+plt.ylabel("Accuracy (%)")
+plt.title("Comparison of Classification Algorithms")
+plt.ylim(0, 110)
+plt.xticks(rotation=20)
+plt.show()
